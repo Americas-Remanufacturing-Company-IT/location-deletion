@@ -96,18 +96,22 @@ def filter():
         type_value = f'{item + 1}'
         time.sleep(2)
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
+        time.sleep(1)
         #Date Exported to Name
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a").click()
+        time.sleep(1)
         driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_FieldNamePopup_DXI4_T']/span").click()
-        time.sleep(2)
-        #Begins with to Contains
-        driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[2]/a").click()
-        driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_OperationPopup_DXI8_T']/span").click()
+        # time.sleep(2)
+        # #Begins with to Contains
+        # driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[2]/a").click()
+        # driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_OperationPopup_DXI8_T']/span").click()
         time.sleep(2)
         #Types in value
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXValue{type_value}000']").click()
+        time.sleep(1)
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']").send_keys(x)
         print(f"{type_value} out of {len(location_grouping())} {x}")
+        time.sleep(1)
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
     time.sleep(2)
     driver.find_element(by=By.CLASS_NAME, value="dxbButton_Glass").click()
@@ -175,8 +179,6 @@ def get_links():
         find_sign = test_loc.find('=')
         location_id = test_loc[find_sign + 1:]
         ids.append(location_id)
-    print(ids)
-    print(locations)
 
     f = filedialog.asksaveasfile(
         defaultextension='.csv',
