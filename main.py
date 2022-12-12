@@ -107,6 +107,7 @@ def filter():
         #Types in value
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXValue{type_value}000']").click()
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']").send_keys(x)
+        print(f"{type_value} out of {len(location_grouping())} {x}")
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
     time.sleep(2)
     driver.find_element(by=By.CLASS_NAME, value="dxbButton_Glass").click()
