@@ -34,7 +34,6 @@ options = Options()
 prefs = {"download.default_directory" : cwd}
 options.add_experimental_option("prefs", prefs)
 driver = webdriver.Chrome(options=options)
-driver.implicitly_wait(20)
 """Get users login credential using input"""
 root = Tk()
 root.geometry("400x200")
@@ -83,12 +82,10 @@ Button(root, text="Login", command=button_command).pack()
 
 
 def filter():
-    trial = 'Trial'
     """Somewhere in here should be a check to make sure each element was clicked and tells where the error is"""
+    driver.implicitly_wait(time_to_wait=20)
     driver.find_element(by=By.CLASS_NAME, value="dxgvFilterBarLink_Glass").click()
-    time.sleep(5)
     driver.find_element(by=By.XPATH, value="//a[@class='dxfcGroupType_Glass']").click()
-    time.sleep(2)
     driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_GroupPopup_DXI1_T']/span").click()
     """Bellow needs to be put in a loop and there needs to be a ghost click somewhere"""
     for item, x in enumerate(location_grouping()):
@@ -99,30 +96,22 @@ def filter():
         type_value = f'{item + 1}'
         time.sleep(2)
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
-        time.sleep(2)
         #Date Exported to Name
-        time.sleep(1.5)
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a").click()
-        time.sleep(1.5)
         driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_FieldNamePopup_DXI4_T']/span").click()
-        time.sleep(1.5)
+        time.sleep(2)
         #Begins with to Contains
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[2]/a").click()
-        time.sleep(1.5)
         driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_OperationPopup_DXI8_T']/span").click()
-        time.sleep(1.5)
+        time.sleep(2)
         #Types in value
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXValue{type_value}000']").click()
-        time.sleep(2)
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']").send_keys(x)
-        time.sleep(2)
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
     time.sleep(2)
     driver.find_element(by=By.CLASS_NAME, value="dxbButton_Glass").click()
-    time.sleep(2)
     driver.find_element(by=By.ID, value="ctl00_ContentPlaceHolder1_btnXlsExport").click()
-    # time.sleep(15)
-    # driver.quit()
+
 
 
 def location_grouping():
