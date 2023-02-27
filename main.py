@@ -7,11 +7,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 import chromedriver_autoinstaller
 import csv
 import xlrd
 
 
+testArr = []
 # check chrome stuff
 print('Checking Chrome version')
 # see if chrome is installed
@@ -46,7 +48,7 @@ entry2.pack()
 options = StringVar()
 options.set("Select Option...")
 
-OptionMenu(root, options, "Arc", "Amazon", "Basco").pack()
+OptionMenu(root, options, "Arc", "Amazon", "Almo","Basco", "BestBuy", "CB", "Galanz", "Hurom", "NewAir", "SB", "TTI", "TLC", "Tineco" ).pack()
 
 def file_select():
     Tk().withdraw()
@@ -70,6 +72,16 @@ def button_command():
     driver.find_element(by=By.ID, value="btnLogin").click()
     location_page = domain_url + "report/Locations.aspx"
     driver.get(location_page)
+    global filterButton
+    global propertyName
+    if domain == 'BestBuy':
+        filterButton = 'dxgvFilterBarLink_Aqua'
+    else:
+        filterButton = 'dxgvFilterBarLink_Glass'
+    if domain == 'BestBuy':
+        propertyName = 'dxfcPropertyName_Aqua'
+    else:
+        propertyName = 'dxfcPropertyName_Glass'
     filter()
     get_links()
     os.remove('gvLocations.xls')
@@ -83,10 +95,19 @@ Button(root, text="Login", command=button_command).pack()
 
 def filter():
     """Somewhere in here should be a check to make sure each element was clicked and tells where the error is"""
-    driver.implicitly_wait(time_to_wait=20)
-    driver.find_element(by=By.CLASS_NAME, value="dxgvFilterBarLink_Glass").click()
+    wait = WebDriverWait(driver, 15)
+    # Wait until we switch to locations and the filter button is visible
+    wait.until(EC.element_to_be_clickable((By.CLASS_NAME, f"{filterButton}")))
+    driver.find_element(by=By.CLASS_NAME, value=f"{filterButton}").click()
+    # Wait until the window pops up and "And" is available to click
+    wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@class='dxfcGroupType_Glass']")))
     driver.find_element(by=By.XPATH, value="//a[@class='dxfcGroupType_Glass']").click()
+    # Wait until Name is visible in the dropdown and click it
+    wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_GroupPopup_DXI1_T']/span")))
     driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_GroupPopup_DXI1_T']/span").click()
+    # Wait until Or text shows up and then click the filter plus icon   
+    wait.until(EC.text_to_be_present_in_element((By.CLASS_NAME, "dxfcGroupType_Glass"), "Or"))
+    driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()   
     """Bellow needs to be put in a loop and there needs to be a ghost click somewhere"""
     for item, x in enumerate(location_grouping()):
         if item > 0:
@@ -94,27 +115,36 @@ def filter():
         else:
             insert = ''
         type_value = f'{item + 1}'
-        time.sleep(2)
-        driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
-        time.sleep(1)
+        global xpath_num
+        xpath_num = 0
         #Date Exported to Name
+        # Wait until Date Export shows up and then click it
+        wait.until(EC.text_to_be_present_in_element((By.XPATH, f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a"), "Date Exported"))
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a").click()
-        time.sleep(1)
+        # Wait until the name button is clickable
+        wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_FieldNamePopup_DXI4_T']/span")))
         driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_FieldNamePopup_DXI4_T']/span").click()
-        # time.sleep(2)
-        # #Begins with to Contains
-        # driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li{insert}/table/tbody/tr/td[2]/table/tbody/tr/td[2]/a").click()
-        # driver.find_element(by=By.XPATH, value="//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_OperationPopup_DXI8_T']/span").click()
-        time.sleep(2)
         #Types in value
+        # Wait until Name text to show up to click the values element
+        wait.until(EC.text_to_be_present_in_element((By.XPATH, f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li[{type_value}]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a"), "Name"))
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXValue{type_value}000']").click()
-        time.sleep(1)
+        # Wait for the text box to show up before typing
+        wait.until(EC.visibility_of_element_located((By.XPATH, f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']")))
         driver.find_element(by=By.XPATH, value=f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']").send_keys(x)
-        print(f"{type_value} out of {len(location_grouping())} {x}")
-        time.sleep(1)
+        # Wait until specified text is typed in before doing a ghost click
+        wait.until(EC.visibility_of_element_located((By.XPATH, f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXEdit{type_value}000_I']")))
         driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
-    time.sleep(2)
-    driver.find_element(by=By.CLASS_NAME, value="dxbButton_Glass").click()
+        # Wait until text is in the values element before clicking the plus again
+        wait.until(EC.element_to_be_clickable((By.ID, f"ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC_DXValue{type_value}000")))
+        driver.find_element(by=By.CLASS_NAME, value="dxEditors_fcadd_Glass").click()
+        print(f"{type_value} out of {len(location_grouping())} entered.")
+    # Wait until the last location is entered into the values box to to click "OK"
+    # wait.until(EC.text_to_be_present_in_element((By.XPATH, f"//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPFC']/tbody/tr/td/ul/li/ul/li[{xpath_num}]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/a"), "Date Exported"))
+    time.sleep(5)
+    driver.find_element(by=By.CLASS_NAME, value=f"dxbButton_Glass").click()
+    # Wait until the export button is visible and press it
+    time.sleep(5)
+    # wait.until(EC.invisibility_of_element_located((By.XPATH, "//*[@id='ctl00_ContentPlaceHolder1_gvLocations_DXPFCForm_DXPWMB-1']")))
     driver.find_element(by=By.ID, value="ctl00_ContentPlaceHolder1_btnXlsExport").click()
 
 
@@ -124,9 +154,11 @@ def location_grouping():
         csv_reader = csv.reader(csv_file)
 
         locations = []
+        checkArr = []
         final_locations = []
         for line in csv_reader:
-            location_grab = line[0]
+            location_grab = line[0].upper()
+            testArr.append(line[0])
             location_split = location_grab.split('-')
             if len(location_split) < 3:
                 locations.append('-'.join(location_split))
@@ -147,26 +179,38 @@ def location_grouping():
                 print('Something went wrong')
                 exit()
         repeated = list(set(locations))
-        repeated.sort()
         for items in repeated:
-            final_locations.append(items)
+            checkArr.append(items)
+            checkArr.sort()
+        for checking in checkArr:
+            if checking not in final_locations:
+                final_locations.append(checking)
+        
     return final_locations
 
 def get_links():
-    time.sleep(3)
+    time.sleep(10)
     wb = xlrd.open_workbook("gvLocations.xls")
     sh = wb.sheet_by_index(0)
     ids = []
     hyperlinks = []
     locations = []
+    holderArr = []
 
+    print(testArr)
     for row in range(sh.nrows):
         rowValues = sh.row_values(row, start_colx=0, end_colx=2)
         loc_name = rowValues[0]
         link = sh.hyperlink_map.get((row, 0))
         url = '(No URL)' if link is None else link.url_or_path
         hyperlinks.append(url)
-        locations.append(loc_name)
+
+        holderArr.append(loc_name)
+
+        for i, j in enumerate(testArr):
+            for k, l in enumerate(holderArr):
+                if testArr[i] == holderArr[k]:
+                    locations.append(holderArr[k])
     hyperlinks.pop(0)
     locations.pop(0)
 

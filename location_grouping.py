@@ -1,50 +1,41 @@
-import csv
-from tkinter import *
-from tkinter import ttk, filedialog
-import os
+# import csv
+# import xlrd
+
+# testArr = ['OR-EE-01-01-F', 'OR-EE-04-05-F', 'OR-EE-10-05-F', 'OR-EE-11-04-F']
+# equalsArr = []
+# def get_links():
+#     wb = xlrd.open_workbook("gvLocations.xls")
+#     sh = wb.sheet_by_index(0)
+#     ids = []
+#     hyperlinks = []
+#     locations = []
 
 
-def file_select():
-    Tk().withdraw()
-    file = filedialog.askopenfile(mode='r', filetypes=[('CSV Files', '*.csv')])
-    if file:
-        global file_name
-        filepath = os.path.abspath(file.name)
-        file_name = str(filepath)
+#     for row in range(sh.nrows):
+#         rowValues = sh.row_values(row, start_colx=0, end_colx=2)
+#         loc_name = rowValues[0]
+#         link = sh.hyperlink_map.get((row, 0))
+#         url = '(No URL)' if link is None else link.url_or_path
+#         hyperlinks.append(url)
+#         locations.append(loc_name)
+#     hyperlinks.pop(0)
+#     locations.pop(0)
 
-file_select()
+#     for i, j in enumerate(testArr):
+#         for k, l in enumerate(locations):
+#             if testArr[i] == locations[k]:
+#                 equalsArr.append(locations[k])
+# get_links()
 
-def location_grouping():
-    with open(file_name, "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
+# print(equalsArr)
 
-        locations = []
-        final_locations = []
-        for line in csv_reader:
-            location_grab = line[0]
-            location_split = location_grab.split('-')
-            if len(location_split) < 3:
-                locations.append('-'.join(location_split))
-            elif len(location_split) == 3:
-                del location_split[-1]
-                locations.append('-'.join(location_split))
-            elif len(location_split) > 4:
-                del location_split[-1]
-                del location_split[-1]
-                del location_split[-1]
-                locations.append('-'.join(location_split))
-            # elif len(location_split) > 2 and location_split[-1].isdigit():
-            elif len(location_split) == 4:
-                del location_split[-1]
-                del location_split[-1]
-                locations.append('-'.join(location_split))
-            else:
-                print('Something went wrong')
-                exit()
-        repeated = list(set(locations))
-        repeated.sort()
-        for items in repeated:
-            final_locations.append(items)
-    return final_locations
+arr = ['hello', 'there', 'friends']
+helperArr = []
+anotherarr = []
+for item, x in enumerate(arr):
+    helperArr.append(x)
+print(helperArr[0])
 
-print(location_grouping())
+
+
+
