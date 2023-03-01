@@ -1,6 +1,7 @@
 import time
 from tkinter import *
 from tkinter import ttk, filedialog
+import PySimpleGUI as sg
 import os
 import time
 from selenium import webdriver
@@ -15,6 +16,8 @@ import xlrd
 
 
 testArr = []
+filename = "gvLocations.xls"
+wait_time = 5
 # check chrome stuff
 print('Checking Chrome version')
 # see if chrome is installed
@@ -38,6 +41,7 @@ prefs = {"download.default_directory" : cwd}
 options.add_experimental_option("prefs", prefs)
 driver = webdriver.Chrome(options=options)
 """Get users login credential using input"""
+
 root = Tk()
 root.geometry("400x200")
 
@@ -73,15 +77,17 @@ def button_command():
     driver.find_element(by=By.ID, value="btnLogin").click()
     location_page = domain_url + "report/Locations.aspx"
     driver.get(location_page)
+    delete_file()
     filter()
     get_links()
-    os.remove('gvLocations.xls')
-    driver.quit()
-    exit()
+    end()
 
 
 Button(root, text="Login", command=button_command).pack()
 
+def end():
+    driver.quit()
+    exit()
 
 def filter():
     """Somewhere in here should be a check to make sure each element was clicked and tells where the error is"""
@@ -90,7 +96,9 @@ def filter():
     wait.until(EC.element_to_be_clickable((By.ID, "ctl00_ContentPlaceHolder1_btnXlsExport")))
     driver.find_element(by=By.ID, value="ctl00_ContentPlaceHolder1_btnXlsExport").click()
 
-
+def delete_file(): 
+    if os.path.exists(filename):
+        os.remove(filename)
 
 def get_links():
     helperArr = []
@@ -105,8 +113,6 @@ def get_links():
         for items in repeated:
             final_locations.append(items)
 
-    filename = "gvLocations.xls"
-    wait_time = 5
 
     while not os.path.exists(filename):
         print("File not found. Waiting for", wait_time, "seconds...")
@@ -150,6 +156,9 @@ def get_links():
         for x, y in enumerate(final_locations):
             if y in arr:
                 resultArr.append(arr)
+            else:
+                print('Error: Locations not found!')
+                end()
     print(resultArr)
 
 
