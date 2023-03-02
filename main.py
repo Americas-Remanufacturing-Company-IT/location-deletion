@@ -153,21 +153,15 @@ def get_links():
     print(resultArr)
 
 
-    f = filedialog.asksaveasfile(
-        defaultextension='.csv',
-        filetypes=[
-            ('CSV file', '.csv'),
-            ('Text file', '.txt'),
-            ('All files', '.*'),
-        ])
+    file_path = filedialog.asksaveasfilename(defaultextension='.csv')
 
-
-    writer = csv.writer(f)
-    writer.writerow(['LocationID', 'NewName', 'Active', 'LocationType', 'NewDescription', 'IsShipping',
-                     'IsReceiving', 'IsRepair', 'IsHarvest', 'IsHarvestParentMove', 'IsHarvestComponentMove'])
+    with open(file_path, 'w', newline='') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerow(['LocationID', 'NewName', 'Active', 'LocationType', 'NewDescription', 'IsShipping',
+                         'IsReceiving', 'IsRepair', 'IsHarvest', 'IsHarvestParentMove', 'IsHarvestComponentMove'])
     
-    for x in resultArr:
-        writer.writerow(x)
+        for x in resultArr:
+            writer.writerow(x)
 
 
     # for x, y in enumerate(final_locations):
