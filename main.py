@@ -14,10 +14,8 @@ import chromedriver_autoinstaller
 import PySimpleGUI as sg
 
 
-# Organize imports
 sg.theme('BlueMono')
 
-# Avoid hardcoding values
 screen_width, screen_height = sg.Window.get_screen_size()
 POPUP_CENTER_X = int(screen_width / 2)
 POPUP_CENTER_Y = int(screen_height / 10)
