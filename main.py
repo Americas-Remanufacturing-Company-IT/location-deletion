@@ -1,3 +1,4 @@
+from multiprocessing import Value
 import time
 from tkinter import *
 from tkinter import ttk, filedialog
@@ -27,6 +28,7 @@ layout = [
     [sg.Input(key='-File-', readonly=True, disabled_readonly_background_color='light gray'), sg.FileBrowse(file_types=(('CSV Files', '*.csv'),))],
     [sg.Text('Domain', size=(20,1))],
     [sg.Combo(domain_list, key='-Domain-', readonly=True)],
+    [sg.Text('Activate'), sg.Checkbox('', key='-Activate-', default=False)],
     [sg.Button('Login'), sg.Exit()]
 ]
 
@@ -36,7 +38,7 @@ def main():
     while True:
 
         event, values = window.read()
-
+        activate = values['-Activate-']
         username = values['-UserName-']
         password = values['-Password-']
         file_name = values['-File-']
@@ -95,6 +97,9 @@ def main():
                 os.remove(filename)
             
             wait = WebDriverWait(driver, 15)
+            if activate == True:
+                wait.until(EC.element_to_be_clickable((By.ID, "ctl00_ContentPlaceHolder1_chkShowAll")))
+                driver.find_element(by=By.ID, value="ctl00_ContentPlaceHolder1_chkShowAll").click()
             wait.until(EC.element_to_be_clickable((By.ID, "ctl00_ContentPlaceHolder1_btnXlsExport")))
             driver.find_element(by=By.ID, value="ctl00_ContentPlaceHolder1_btnXlsExport").click()
 
@@ -142,7 +147,7 @@ def main():
             myArr = []
             resultArr = []
             for i in range(len(locations)):
-                myArr.append([ids[i], locations[i], 'FALSE', 'Other', locations[i], 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE'])
+                myArr.append([ids[i], locations[i], activate, 'Other', locations[i], 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE'])
 
             for arr in myArr:
                 for i in final_locations:
